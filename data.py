@@ -8,7 +8,7 @@ suitConfig_path = "src/suitConfig.json"
 defaulCharacter_path = "src/character.json"
 # 用户文件
 folder = os.path.expanduser('~/Documents')
-folder = folder + '/keqing'
+folder = folder + '/StarRail'
 character_path = folder + '/character.json'
 artifact_path = folder + '/artifacts.json'
 artifactOwner_path = folder + '/artifactOwner.json'

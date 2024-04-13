@@ -11,13 +11,13 @@ print(f'分辨率{width_r, height_r}')
 SCALE = width_r / width_s
 
 # 游戏窗口信息获取
-window_sc = win32gui.FindWindow('UnityWndClass', '原神')
+window_sc = win32gui.FindWindow('UnityWndClass', '崩坏：星穹铁道')
 window_start = win32gui.FindWindow('START Cloud Game', 'START云游戏-Game')
 # print(win32gui.GetClassName(window_start))
 window = window_sc or window_start
 while(not window):
     print('未找到游戏窗口，请启动游戏！')
-    window_sc = win32gui.FindWindow('UnityWndClass', '原神')
+    window_sc = win32gui.FindWindow('UnityWndClass', '崩坏:星穹铁道')
     window_start = win32gui.FindWindow('START Cloud Game', 'START云游戏-Game')
     window = window_sc or window_start
     time.sleep(5)
@@ -60,14 +60,43 @@ if ratio > 1.55 and ratio < 1.65:
 
 # 16:9窗口模式
 elif ratio > 1.7 and ratio < 1.8:
-    x_initial_A, y_initial_A, x_offset_A, y_offset_A = (224 / 1920 * w_width + w_left, (289 - 36) / 1080 * w_hight + SCALE * 24 + w_top, 146 / 1920 * w_width, 175 / 1080 * w_hight)
-    x_left_A, x_right_A, y_top_A, y_bottom_A = (121 / 1920 * w_width + w_left, 246 / 1920 * w_width + w_left, (157 - 36) / 1080 * w_hight + SCALE * 24 + w_top, (311 - 36) / 1080 * w_hight + SCALE * 24 + w_top)
-    x_grab_A, y_grab_A, w_grab_A, h_grab_A = (1334 / 1920 * w_width + w_left, (161 - 36) / 1080 * w_hight + SCALE * 24 + w_top, (450 - 50) / 1920 * w_width, 506 / 1080 * w_hight)
+    x_initial_A, y_initial_A, x_offset_A, y_offset_A = (
+        224 / 1920 * w_width + w_left,
+        (289 - 36) / 1080 * w_hight + SCALE * 24 + w_top,
+        146 / 1920 * w_width,
+        175 / 1080 * w_hight)
+
+    x_left_A, x_right_A, y_top_A, y_bottom_A = (
+        121 / 1920 * w_width + w_left,
+        246 / 1920 * w_width + w_left,
+        (157 - 36) / 1080 * w_hight + SCALE * 24 + w_top,
+        (311 - 36) / 1080 * w_hight + SCALE * 24 + w_top)
+
+    x_grab_A, y_grab_A, w_grab_A, h_grab_A = (
+        1334 / 1920 * w_width + w_left,
+        (161 - 36) / 1080 * w_hight + SCALE * 24 + w_top,
+        (450 - 50) / 1920 * w_width,
+        506 / 1080 * w_hight)
+
     row_A, col_A = (5, 8)
 
-    x_initial_B, y_initial_B, x_offset_B, y_offset_B = (144 / 1920 * w_width + w_left, (293 - 36) / 1080 * w_hight + SCALE * 24 + w_top, 142 / 1920 * w_width, 168 / 1080 * w_hight)
-    x_left_B, x_right_B, y_top_B, y_bottom_B = (39 / 1920 * w_width + w_left, 166 / 1920 * w_width + w_left, (162 - 36) / 1080 * w_hight + SCALE * 24 + w_top, (315 - 36) / 1080 * w_hight + SCALE * 24 + w_top)
-    x_grab_B, y_grab_B, w_grab_B, h_grab_B = (1460 / 1920 * w_width + w_left, (147 - 36) / 1080 * w_hight + SCALE * 24 + w_top, 413 / 1920 * w_width, 378 / 1080 * w_hight)
+    x_initial_B, y_initial_B, x_offset_B, y_offset_B = (
+        144 / 1920 * w_width + w_left,
+        (360 - 36) / 1080 * w_hight + SCALE * 24 + w_top,
+        124 / 1920 * w_width,
+        147 / 1080 * w_hight)
+
+    x_left_B, x_right_B, y_top_B, y_bottom_B = (
+        39 / 1920 * w_width + w_left,
+        166 / 1920 * w_width + w_left,
+        (238 - 36) / 1080 * w_hight + SCALE * 24 + w_top,
+        (385 - 36) / 1080 * w_hight + SCALE * 24 + w_top)
+
+    x_grab_B, y_grab_B, w_grab_B, h_grab_B = (
+        1478 / 1920 * w_width + w_left,
+        (205 - 36) / 1080 * w_hight + SCALE * 24 + w_top,
+        424 / 1920 * w_width,
+        331 / 1080 * w_hight)
     row_B, col_B = (5, 4)
 
 # 3:2窗口模式
@@ -120,6 +149,9 @@ for i in range(row_A):
 xarray_B = []
 for i in range(col_B):
     position = x_left_B + i * x_offset_B, x_right_B + i * x_offset_B
+
+    # print(position - )
+
     xarray_B.append(position)
 yarray_B = []
 for i in range(row_B):
