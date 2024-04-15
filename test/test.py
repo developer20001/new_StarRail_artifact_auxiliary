@@ -12,21 +12,21 @@
 # os.startfile(folder)
 # print("弹窗")
 
-class Data:
-    def __init__(self):
-        print("Data")
-        self.str = "Data"
-
-    def getStr(self):
-        return self.str
-
-dataManager = Data()
+# class Data:
+#     def __init__(self):
+#         print("Data")
+#         self.str = "Data"
+#
+#     def getStr(self):
+#         return self.str
+#
+# dataManager = Data()
 
 
 # print(dataManager.getStr())
 
 
-# a = ["1","2", "3"]
-#
-#
-# print(a.index("3"))
+a = ['先驱的虚极罗盘', '', '+15', '攻击力', '352', '生命值', '42', '生命值', '3.4%', '暴击率', '8.4%', '暴击伤害', '24.6%']
+
+
+print({}=={})

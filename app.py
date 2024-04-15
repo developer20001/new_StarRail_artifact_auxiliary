@@ -327,9 +327,15 @@ class MainWindow(QMainWindow):
                             self.insert_data()
                         # ocr识别与结果返回并刷新主面板、贴图
                         self.id = j * self.col + i
-                        self.artifact[str(self.id)] = ocr.rapidocr(self.x_grab, self.y_grab, self.w_grab, self.h_grab)
-                        self.fresh_main_window()
-                        self.fresh_paste_window()
+
+                        ocrResult = ocr.rapidocr(self.x_grab, self.y_grab, self.w_grab, self.h_grab)
+                        if ocrResult:
+                            self.artifact[str(self.id)] = ocrResult
+                            self.fresh_main_window()
+                            self.fresh_paste_window()
+                        else:
+                            self.title.setText("识别失败，请重试")
+                            self.title.setStyleSheet("color:red;")
                         break
                 break
 
@@ -373,6 +379,7 @@ class MainWindow(QMainWindow):
     def fresh_main_window(self):
         # 刷新圣遗物基本信息
         self.title.setText('-'.join(self.artifact[str(self.id)][0]))
+        self.title.setStyleSheet("color:black;")
 
         # 计算评分（计算很快就不另外储存了）
         self.score_result = score.cal_score(self.artifact[str(self.id)][1], self.config)

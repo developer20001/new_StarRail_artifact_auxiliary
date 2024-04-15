@@ -46,13 +46,17 @@ class SuitWindow(QWidget):
         for herName in data.getCharacters():
             self.heroNameCombobox.addItem(herName)
         self.setButton = QPushButton('设置>')
-        self.suitCombobox1 = ExtendedComboBox()
-        self.suitCombobox2 = ExtendedComboBox()
-        self.suitCombobox1.addItem("选择套装")
-        self.suitCombobox2.addItem("选择套装")
-        for key in data.getSuitConfig():
-            self.suitCombobox1.addItem(key)
-            self.suitCombobox2.addItem(key)
+        self.suitComboboxA = ExtendedComboBox()
+        self.suitComboboxB = ExtendedComboBox()
+        self.suitComboboxC = ExtendedComboBox()
+        self.suitComboboxA.addItem("选择套装")
+        self.suitComboboxB.addItem("选择套装")
+        self.suitComboboxC.addItem("选择套装")
+        for key in data.getSuitConfig("外圈"):
+            self.suitComboboxA.addItem(key)
+            self.suitComboboxB.addItem(key)
+        for key in data.getSuitConfig("内圈"):
+            self.suitComboboxC.addItem(key)
         self.mainTagCombobox = {}
         MainTagType = data.getMainTagType()
         for key in MainTagType:
@@ -76,21 +80,23 @@ class SuitWindow(QWidget):
         layout.addWidget(self.setButton, 1, 3, 1, 1)
         layout.addWidget(QLabel('套装类型:'), 2, 0, 1, 1)
         # layout.addWidget(QLabel('(选一个4+1,选两个2+2+1,不选散搭)'), 2, 1, 1, 4)
-        layout.addWidget(QLabel('套装A'), 3, 1, 1, 1)
-        layout.addWidget(self.suitCombobox1, 3, 2, 1, 2)
-        layout.addWidget(QLabel('套装B'), 4, 1, 1, 1)
-        layout.addWidget(self.suitCombobox2, 4, 2, 1, 2)
-        layout.addWidget(QLabel('主要属性:'), 5, 0, 1, 1)
-        layout.addWidget(QLabel('(不选默认不限制主词条)'), 5, 1, 1, 4)
+        layout.addWidget(QLabel('外圈A'), 3, 1, 1, 1)
+        layout.addWidget(self.suitComboboxA, 3, 2, 1, 2)
+        layout.addWidget(QLabel('外圈B'), 4, 1, 1, 1)
+        layout.addWidget(self.suitComboboxB, 4, 2, 1, 2)
+        layout.addWidget(QLabel('内圈C'), 5, 1, 1, 1)
+        layout.addWidget(self.suitComboboxC, 5, 2, 1, 2)
+        layout.addWidget(QLabel('主要属性:'), 6, 0, 1, 1)
+        layout.addWidget(QLabel('(不选默认不限制主词条)'), 6, 1, 1, 4)
         index = 0
         for key in self.mainTagCombobox:
-            layout.addWidget(QLabel(key), 6 + index, 1, 1, 2)
-            layout.addWidget(self.mainTagCombobox[key], 6 + index, 2, 1, 2)
+            layout.addWidget(QLabel(key), 7 + index, 1, 1, 2)
+            layout.addWidget(self.mainTagCombobox[key], 7 + index, 2, 1, 2)
             index += 1
-        layout.addWidget(QLabel('其他选择:'), 9, 0, 1, 1)
-        layout.addWidget(self.radiobtn1, 10, 1, 1, 1)
-        layout.addWidget(self.radiobtn2, 10, 2, 1, 1)
-        layout.addWidget(self.startButton, 11, 0, 1, 4)
+        layout.addWidget(QLabel('其他选择:'), 11, 0, 1, 1)
+        layout.addWidget(self.radiobtn1, 12, 1, 1, 1)
+        layout.addWidget(self.radiobtn2, 12, 2, 1, 1)
+        layout.addWidget(self.startButton, 13, 0, 1, 4)
         self.setLayout(layout)
 
         self.updateUI()
@@ -116,9 +122,10 @@ class SuitWindow(QWidget):
     def startRating(self):
 
         params = {}
-        params["suitA"] = self.suitCombobox1.currentText()
-        params["suitB"] = self.suitCombobox2.currentText()
-        needMainTag = {"生之花": "生命值", "死之羽": "攻击力"}
+        params["suitA"] = self.suitComboboxA.currentText()
+        params["suitB"] = self.suitComboboxB.currentText()
+        params["suitC"] = self.suitComboboxC.currentText()
+        needMainTag = {"头部": "生命值", "手部": "攻击力"}
         for key in self.mainTagCombobox:
             mainTag = self.mainTagCombobox[key].currentText()
             needMainTag[key] = mainTag
@@ -155,9 +162,11 @@ class SuitWindow(QWidget):
         indexObj = data.getIndexByCharacter(self.character)
         for key in indexObj:
             if key == "suitA":
-                self.suitCombobox1.setCurrentIndex(indexObj[key])
+                self.suitComboboxA.setCurrentIndex(indexObj[key])
             elif key == "suitB":
-                self.suitCombobox2.setCurrentIndex(indexObj[key])
+                self.suitComboboxB.setCurrentIndex(indexObj[key])
+            elif key == "suitC":
+                self.suitComboboxC.setCurrentIndex(indexObj[key])
             else:
                 if key in self.mainTagCombobox:
                     self.mainTagCombobox[key].setCurrentIndex(indexObj[key])

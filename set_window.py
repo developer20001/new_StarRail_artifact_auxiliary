@@ -59,9 +59,9 @@ class SetWindow(QWidget):
             layout.addWidget(QLabel(keyName), counter + 2, 1)
             layout.addWidget(self.entryNum[keyName], counter + 2, 2)
             counter += 1
-        layout.addWidget(self.saveButton, 9, 1, 1, 2)
-        layout.addWidget(self.tipsLabel1, 10, 1, 1, 2)
-        layout.addWidget(self.tipsLabel2, 11, 1, 1, 2)
+        layout.addWidget(self.saveButton, 100, 1, 1, 2)
+        layout.addWidget(self.tipsLabel1, 101, 1, 1, 2)
+        layout.addWidget(self.tipsLabel2, 102, 1, 1, 2)
         self.setLayout(layout)
 
         # 注册按钮事件

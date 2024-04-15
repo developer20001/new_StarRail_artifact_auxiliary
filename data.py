@@ -16,88 +16,22 @@ archive_path = folder + '/archive.json'
 artifactScheme_path = folder + "/artifactScheme.json"
 
 # 数据常量
-entryArray = ["暴击率", "暴击伤害", "攻击力", "生命值", "防御力", "元素精通", "元素充能效率"]
-posName = ["生之花", "死之羽", "时之沙", "空之杯", "理之冠"]
+entryArray = ["速度", "生命值", "攻击力", "防御力", "暴击率", "暴击伤害", "击破特攻", "效果命中", "效果抵抗"]
+posName = ["头部", "手部", "躯干", "脚部", "位面球", "连结绳"]
 mainTagType = {
-    "时之沙": ["生命值", "攻击力", "防御力", "元素精通", "元素充能效率"],
-    "空之杯": ["生命值", "攻击力", "防御力", "元素精通", "物理伤害加成", "火元素伤害加成", "雷元素伤害加成",
-               "水元素伤害加成", "草元素伤害加成", "风元素伤害加成", "岩元素伤害加成", "冰元素伤害加成"],
-    "理之冠": ["生命值", "攻击力", "防御力", "元素精通", "暴击率", "暴击伤害", "治疗加成"],
+    "躯干": ["生命值", "攻击力", "防御力", "暴击率", "暴击伤害", "治疗量加成", "效果命中"],
+    "脚部": ["生命值", "攻击力", "防御力", "速度"],
+    "位面球": ["生命值", "攻击力", "防御力", "物理属性伤害提高", "火属性伤害提高", "冰属性伤害提高",
+               "雷属性伤害提高", "风属性伤害提高", "量子属性伤害提高", "虚数属性伤害提高", ],
+    "连结绳": ["生命值", "攻击力", "防御力", "击破特攻", "能量恢复效率"]
 }
-combinationType = {
-    "5": [
-        ["C", "C", "C", "C", "C"]
-    ],
-    "4+1": [
-        ["A", "A", "A", "A", "A"],
-        ["C", "A", "A", "A", "A"],
-        ["A", "C", "A", "A", "A"],
-        ["A", "A", "C", "A", "A"],
-        ["A", "A", "A", "C", "A"],
-        ["A", "A", "A", "A", "C"]
-    ],
-    "2+2+1": [
-        # 三个A两个B情况
-        ["A", "A", "A", "B", "B"],
-        ["A", "A", "B", "A", "B"],
-        ["A", "A", "B", "B", "A"],
-        ["A", "B", "A", "A", "B"],
-        ["A", "B", "A", "B", "A"],
-        ["A", "B", "B", "A", "A"],
-        ["B", "A", "A", "A", "B"],
-        ["B", "A", "A", "B", "A"],
-        ["B", "A", "B", "A", "A"],
-        ["B", "B", "A", "A", "A"],
-        # 三个B两个A情况
-        ["B", "B", "B", "A", "A"],
-        ["B", "B", "A", "B", "A"],
-        ["B", "B", "A", "A", "B"],
-        ["B", "A", "B", "B", "A"],
-        ["B", "A", "B", "A", "B"],
-        ["B", "A", "A", "B", "B"],
-        ["A", "B", "B", "B", "A"],
-        ["A", "B", "B", "A", "B"],
-        ["A", "B", "A", "B", "B"],
-        ["A", "A", "B", "B", "B"],
-        # 两个A两个B一个C情况
-        ["C", "A", "A", "B", "B"],
-        ["C", "A", "B", "A", "B"],
-        ["C", "A", "B", "B", "A"],
-        ["C", "B", "B", "A", "A"],
-        ["C", "B", "A", "B", "A"],
-        ["C", "B", "A", "A", "B"],
-        ["A", "C", "A", "B", "B"],
-        ["A", "C", "B", "A", "B"],
-        ["A", "C", "B", "B", "A"],
-        ["B", "C", "B", "A", "A"],
-        ["B", "C", "A", "B", "A"],
-        ["B", "C", "A", "A", "B"],
-        ["A", "A", "C", "B", "B"],
-        ["A", "B", "C", "A", "B"],
-        ["A", "B", "C", "B", "A"],
-        ["B", "B", "C", "A", "A"],
-        ["B", "A", "C", "B", "A"],
-        ["B", "A", "C", "A", "B"],
-        ["A", "A", "B", "C", "B"],
-        ["A", "B", "A", "C", "B"],
-        ["A", "B", "B", "C", "A"],
-        ["B", "B", "A", "C", "A"],
-        ["B", "A", "B", "C", "A"],
-        ["B", "A", "A", "C", "B"],
-        ["B", "B", "A", "A", "C"],
-        ["B", "A", "B", "A", "C"],
-        ["B", "A", "A", "B", "C"],
-        ["A", "A", "B", "B", "C"],
-        ["A", "B", "A", "B", "C"],
-        ["A", "B", "B", "A", "C"]
-    ]
-}
+combinationType = {}
 
 
 class Data:
     def __init__(self):
         self.artifacts = {'背包': {}, '角色': {}}
-        self.artifactList = {"生之花": {}, "死之羽": {}, "时之沙": {}, "空之杯": {}, "理之冠": {}}
+        self.artifactList = {"头部": {}, "手部": {}, "躯干": {}, "脚部": {}, "位面球": {}, "连结绳": {}}
         self.artifactOwnerList = {}
         self.suitConfig = {}
         self.characters = {}
@@ -159,8 +93,10 @@ class Data:
             json.dump(self.artifacts, fp, ensure_ascii=False)
 
     # 获取圣遗物套装配置
-    def getSuitConfig(self):
-        return self.suitConfig
+    def getSuitConfig(self, type):
+        if type in self.suitConfig:
+            return self.suitConfig[type]
+        return {}
 
     # 获取英雄配置
     def getCharacters(self):
@@ -218,8 +154,8 @@ class Data:
     # 保存圣遗物
     def saveArtifactList(self, data):
         # 判断是否强化满级
-        level = data[0][4]
-        if level != '+20':
+        level = data[0][2]
+        if level != '+15':
             print("未强化满级")
             return 0
 
@@ -239,7 +175,7 @@ class Data:
         value = {}
         value["artifactName"] = data[0][0]
         value["pos"] = data[0][1]
-        value["mainTag"] = data[0][2]
+        value["mainTag"] = data[0][3]
         value["normalTags"] = data[1]
 
         # 存储数据
@@ -252,31 +188,38 @@ class Data:
     def recommend(self, params):
         # 获取组合类型
         if params["suitA"] == "选择套装" and params["suitB"] == "选择套装":
-            combinationKey = "5"
+            combinationKey1 = "1+1+1+1"
         elif params["suitA"] == "选择套装" and params["suitB"] != "选择套装":
             params["suitA"] = params["suitB"]
-            combinationKey = "4+1"
+            combinationKey1 = "4"
         elif params["suitA"] != "选择套装" and params["suitB"] == "选择套装":
-            combinationKey = "4+1"
+            combinationKey1 = "4"
         elif params["suitA"] != "选择套装" and params["suitB"] != "选择套装":
             if params["suitA"] == params["suitB"]:
-                combinationKey = "4+1"
+                combinationKey1 = "4"
             else:
-                combinationKey = "2+2+1"
+                combinationKey1 = "2+2"
         else:
-            combinationKey = "5"
+            combinationKey1 = "1+1+1+1"
+
+        if params["suitC"] == "选择套装":
+            combinationKey2 = "1+1"
+        elif params["suitC"] != "选择套装":
+            combinationKey2 = "2"
 
         # 筛选评分最大值套装
         suit = {
             "A": {},
             "B": {},
             "C": {},
+            "D": {}
         }
         for posItem in posName:
             array = {
                 "A": [],
                 "B": [],
                 "C": [],
+                "D": []
             }
             for artifactKey, artifactValue in self.artifactList[posItem].items():
 
@@ -299,14 +242,14 @@ class Data:
                 tempItem["artifactName"] = artifactValue["artifactName"]
                 tempItem["score"] = score.cal_score(artifactValue["normalTags"], params["heroConfig"])[1]
 
-                if combinationKey == "5":
-                    array['C'].append(tempItem)
-                elif combinationKey == "4+1":
+                if combinationKey1 == "1+1+1+1":
+                    array['D'].append(tempItem)
+                elif combinationKey1 == "4":
                     if artifactValue["artifactName"] == self.suitConfig[params["suitA"]][posItem]:
                         array["A"].append(tempItem)
                     else:
                         array['C'].append(tempItem)
-                elif combinationKey == "2+2+1":
+                elif combinationKey1 == "2+2":
                     if artifactValue["artifactName"] == self.suitConfig[params["suitA"]][posItem]:
                         array["A"].append(tempItem)
                     elif artifactValue["artifactName"] == self.suitConfig[params["suitB"]][posItem]:
@@ -396,4 +339,6 @@ class Data:
     # 获取配置文件夹路径
     def getUserDataPath(self):
         return folder
+
+
 data = Data()
