@@ -31,6 +31,7 @@ average = {
     '效果抵抗': 3.89
 }
 
+
 def cal_score(ocr_result_sub, config):
     '''计算圣遗物评分、词条数、词条强化次数
     参数：
@@ -48,24 +49,27 @@ def cal_score(ocr_result_sub, config):
         round(entriesSum, 1): 有效词条数float
             4.5
     '''
-        
+
     scores = []
     powerupArray = []
     sums = 0
     entriesSum = 0
+
+    # 补分逻辑
+    # print("补分逻辑")
+    # print(ocr_result_sub)
+    # print(ocr_result_main)
+    # if ocr_result_main in config and config[ocr_result_main]>0:
+    #     if ocr_result_main==
+
     for key, value in ocr_result_sub.items():
-        
         # 兼容角色配置未区分百分比的情况
         if key == '生命值百分比' or key == '攻击力百分比' or key == '防御力百分比':
             key_s = key[:3]
         else:
             key_s = key
-        
-        # key值存在误识别情况，则判定为0
-        try:
-            score = round(value * config[key_s] * coefficient[key], 1)
-        except:
-            score = 0
+
+        score = round(value * config[key_s] * coefficient[key], 1)
         scores.append(score)
         sums += score
 
@@ -77,10 +81,10 @@ def cal_score(ocr_result_sub, config):
         powerupArray.append(powerup)
 
         # 计算有效词条数量
-        if key_s in config and config[key_s]>0 :
+        if key_s in config and config[key_s] > 0:
             entries = value / average[key]
             # print(key, entries)
             entriesSum += entries
-    
+
     # print(scores, round(sums, 1), powerupArray, round(entriesSum, 1))
     return scores, round(sums, 1), powerupArray, round(entriesSum, 1)

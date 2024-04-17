@@ -22,22 +22,27 @@ def rapidocr(x, y, w, h):
             如：{'防御力': 23.0, '元素充能效率': 5.8, '暴击伤害': 5.4}
     '''
 
-    # 截屏与ocr识别
-    img = ImageGrab.grab(bbox=(x, y, x + w, y + h))
-    img.save('src/grab.png')
-
-    result = orcImage('src/grab.png')
+    result = orcImage(x, y, w, h)
     if not result:
         print('识别失败')
         return False
-    print(result)
+    # print(result)
 
     # 千位符（含误识别的.）兼容
     pattern_thou = '\d\.\d{3}|\d\,\d{3}'
     txt = [re.sub(pattern_thou, item.replace(',', '').replace('.', ''), item) for item in result]
 
-    name = txt[0].replace('明威之', '明威之镡')
-    parts = txt[1]
+    name = txt[0].\
+        replace('者的', '莳者的'). \
+        replace('臂罐', '臂鞲'). \
+        replace('臂購', '臂鞲'). \
+        replace('绝足锁', '绝足锁桎'). \
+        replace("黑塔，", '黑塔'). \
+        replace("黑塔」", '黑塔'). \
+        replace("圳裂缆索", '坼裂缆索'). \
+        replace("系因", '系囚'). \
+        replace('石桔', '石梏铐')
+    parts = txt[1].replace("躯于", '躯干')
     lvl = txt[2]
     main_name = txt[3]
     main_digit = txt[4]
@@ -92,14 +97,19 @@ def rapidocr(x, y, w, h):
     return basic, result
 
 
-def orcImage(imagePath):
+def orcImage(x, y, w, h):
     result = False
     ocr = RapidOCR()
     tryTimes = 3
     flag = True
     while flag:
         tryTimes -= 1
+
+        # 截屏与ocr识别
+        img = ImageGrab.grab(bbox=(x, y, x + w, y + h))
+        img.save('src/grab.png')
         result, elapse = ocr('src/grab.png', use_det=True, use_cls=False, use_rec=True, text_score=0.35)
+        # print(result)
         result = [item[1] for item in result]
         checkResult = check_data_compliance(result)
         if not checkResult:
@@ -109,10 +119,13 @@ def orcImage(imagePath):
     return result
 def check_data_compliance(data):
     if len(data) != 13:
+        print("数据长度不符合要求")
         return False
     if "" in data:
+        print("数据中存在空值")
         return False
     if "0" in data:
+        print("数据中存在0")
         return False
     return True
 

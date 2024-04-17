@@ -26,6 +26,7 @@ from PySide6.QtWidgets import (
 
 myappid = 'v0.8.0'
 
+
 # 主窗口
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -66,15 +67,15 @@ class MainWindow(QMainWindow):
 
         # 默认角色及配置
         self.character = '全属性'
-        self.config = {'生命值': 1, '攻击力': 1, '防御力': 1, '暴击率': 1, '暴击伤害': 1, '元素精通': 1,
-                       '元素充能效率': 1}
+        self.config = {"速度": 1, "生命值": 1, "攻击力": 1, "防御力": 1, "暴击率": 1, "暴击伤害": 1, "击破特攻": 1,
+                       "效果命中": 1, "效果抵抗": 1}
         # 角色选择框
         self.combobox = ExtendedComboBox()
         # 添加角色
         self.characters = data.getCharacters()
         for key in self.characters:
             self.combobox.addItem(key)
-        #设置按钮
+        # 设置按钮
         self.setButton = QPushButton('设置>')
 
         # 识别结果显示，初始配置
@@ -166,7 +167,7 @@ class MainWindow(QMainWindow):
         # 背包、角色单选
         self.radiobtn1.toggled.connect(lambda: self.radiobtn_state(self.radiobtn1))
         self.radiobtn2.toggled.connect(lambda: self.radiobtn_state(self.radiobtn2))
-        #套装推荐
+        # 套装推荐
         self.suitButton.clicked.connect(self.swich_suit_window)
 
         # 角色下拉框选择
@@ -231,11 +232,11 @@ class MainWindow(QMainWindow):
         try:
             self.config = self.characters[self.character]
             if self.config == {}:
-                self.config = {'生命值': 1, '攻击力': 1, '防御力': 1, '暴击率': 1, '暴击伤害': 1, '元素精通': 1,
-                               '元素充能效率': 1}
+                self.config = {"速度": 1, "生命值": 1, "攻击力": 1, "防御力": 1, "暴击率": 1, "暴击伤害": 1,
+                               "击破特攻": 1, "效果命中": 1, "效果抵抗": 1}
         except:
-            self.config = {'生命值': 1, '攻击力': 1, '防御力': 1, '暴击率': 1, '暴击伤害': 1, '元素精通': 1,
-                           '元素充能效率': 1}
+            self.config = {"速度": 1, "生命值": 1, "攻击力": 1, "防御力": 1, "暴击率": 1, "暴击伤害": 1, "击破特攻": 1,
+                           "效果命中": 1, "效果抵抗": 1}
         # 更新评分贴图
         for i in range(len(self.pastes)):
             if self.pastes[i].isVisible() == True:
@@ -334,7 +335,7 @@ class MainWindow(QMainWindow):
                             self.fresh_main_window()
                             self.fresh_paste_window()
                         else:
-                            self.title.setText("识别失败，请重试")
+                            self.title.setText("识别失败，请重试123")
                             self.title.setStyleSheet("color:red;")
                         break
                 break
@@ -486,6 +487,8 @@ class MainWindow(QMainWindow):
         self.setWindow = SetWindow()
         self.setWindow.update(self.character)
         self.setWindow.show()
+
+
 def main():
     # 任务栏图标问题
     try:

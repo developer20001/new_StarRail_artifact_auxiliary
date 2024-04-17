@@ -24,7 +24,7 @@ class SuitResultWindow(QWidget):
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), 'src/keqing.ico')))
         self.setWindowTitle("生成方案")
         self.setFocusPolicy(Qt.StrongFocus)
-        self.move(0, 400)
+        self.move(0, 457)
 
         # 初始化变量
         self.character = "全属性"
@@ -71,8 +71,8 @@ class SuitResultWindow(QWidget):
             layout.addWidget(self.artifactScoreSubLabel[posItem], 1 + 3 * counter + 1, 5, 2, 1)
             layout.addWidget(QLabel(" "), 4 + 3 * counter, 0, 1, 4)
             counter += 1
-        layout.addWidget(self.equipTips, 16, 0, 1, 10)
-        layout.addWidget(self.equipButton, 17, 0, 1, 10)
+        layout.addWidget(self.equipTips, 100, 0, 1, 10)
+        layout.addWidget(self.equipButton, 101, 0, 1, 10)
         self.setLayout(layout)
 
         # 注册事件

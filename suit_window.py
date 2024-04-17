@@ -130,8 +130,11 @@ class SuitWindow(QWidget):
             mainTag = self.mainTagCombobox[key].currentText()
             needMainTag[key] = mainTag
             params[key] = mainTag
+
         # 保存方案
-        data.setArtifactScheme(self.character, params)
+        saveParams = params
+        data.setArtifactScheme(self.character, saveParams)
+
         params["needMainTag"] = needMainTag
         params["character"] = self.character
         params["heroConfig"] = data.getCharacters()[self.character]
@@ -143,6 +146,8 @@ class SuitWindow(QWidget):
             self.suitResultWindow = SuitResultWindow()
             self.suitResultWindow.update(self.character, result)
             self.suitResultWindow.show()
+        else:
+            print("无可用方案")
 
     # 单选框按钮
     def radiobtn_state(self, btn):

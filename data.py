@@ -17,7 +17,8 @@ artifactScheme_path = folder + "/artifactScheme.json"
 
 # 数据常量
 entryArray = ["速度", "生命值", "攻击力", "防御力", "暴击率", "暴击伤害", "击破特攻", "效果命中", "效果抵抗"]
-posName = ["头部", "手部", "躯干", "脚部", "位面球", "连结绳"]
+posNameOut = ["头部", "手部", "躯干", "脚部"]
+posNameIn = ["位面球", "连结绳"]
 mainTagType = {
     "躯干": ["生命值", "攻击力", "防御力", "暴击率", "暴击伤害", "治疗量加成", "效果命中"],
     "脚部": ["生命值", "攻击力", "防御力", "速度"],
@@ -25,7 +26,32 @@ mainTagType = {
                "雷属性伤害提高", "风属性伤害提高", "量子属性伤害提高", "虚数属性伤害提高", ],
     "连结绳": ["生命值", "攻击力", "防御力", "击破特攻", "能量恢复效率"]
 }
-combinationType = {}
+combinationTypeOut = {
+    "1+1+1+1": [
+        ["B", "B", "B", "B"]
+    ],
+    "2+2": [
+        # 两个A两个B
+        ["A", "A", "B", "B"],
+        ["A", "B", "A", "B"],
+        ["A", "B", "B", "A"],
+        ["B", "A", "A", "B"],
+        ["B", "A", "B", "A"],
+        ["B", "B", "A", "A"]
+    ],
+    "4": [
+        ["A", "A", "A", "A"]
+    ]
+}
+
+combinationTypeIn = {
+    "1+1": [
+        ["B", "B"]
+    ],
+    "2": [
+        ["A", "A"]
+    ]
+}
 
 
 class Data:
@@ -188,38 +214,35 @@ class Data:
     def recommend(self, params):
         # 获取组合类型
         if params["suitA"] == "选择套装" and params["suitB"] == "选择套装":
-            combinationKey1 = "1+1+1+1"
+            combinationKeyOut = "1+1+1+1"
         elif params["suitA"] == "选择套装" and params["suitB"] != "选择套装":
             params["suitA"] = params["suitB"]
-            combinationKey1 = "4"
+            combinationKeyOut = "4"
         elif params["suitA"] != "选择套装" and params["suitB"] == "选择套装":
-            combinationKey1 = "4"
+            combinationKeyOut = "4"
         elif params["suitA"] != "选择套装" and params["suitB"] != "选择套装":
             if params["suitA"] == params["suitB"]:
-                combinationKey1 = "4"
+                combinationKeyOut = "4"
             else:
-                combinationKey1 = "2+2"
+                combinationKeyOut = "2+2"
         else:
-            combinationKey1 = "1+1+1+1"
+            combinationKeyOut = "1+1+1+1"
 
         if params["suitC"] == "选择套装":
-            combinationKey2 = "1+1"
+            combinationKeyIn = "1+1"
         elif params["suitC"] != "选择套装":
-            combinationKey2 = "2"
+            combinationKeyIn = "2"
 
         # 筛选评分最大值套装
-        suit = {
+        # 计算外圈
+        suitOut = {
             "A": {},
-            "B": {},
-            "C": {},
-            "D": {}
+            "B": {}
         }
-        for posItem in posName:
-            array = {
+        for posItem in posNameOut:
+            arrayOut = {
                 "A": [],
-                "B": [],
-                "C": [],
-                "D": []
+                "B": []
             }
             for artifactKey, artifactValue in self.artifactList[posItem].items():
 
@@ -242,73 +265,168 @@ class Data:
                 tempItem["artifactName"] = artifactValue["artifactName"]
                 tempItem["score"] = score.cal_score(artifactValue["normalTags"], params["heroConfig"])[1]
 
-                if combinationKey1 == "1+1+1+1":
-                    array['D'].append(tempItem)
-                elif combinationKey1 == "4":
-                    if artifactValue["artifactName"] == self.suitConfig[params["suitA"]][posItem]:
-                        array["A"].append(tempItem)
+                if combinationKeyOut == "1+1+1+1":
+                    arrayOut['B'].append(tempItem)
+                elif combinationKeyOut == "2+1+1":
+                    if artifactValue["artifactName"] == self.suitConfig["外圈"][params["suitA"]][posItem]:
+                        arrayOut["A"].append(tempItem)
                     else:
-                        array['C'].append(tempItem)
-                elif combinationKey1 == "2+2":
-                    if artifactValue["artifactName"] == self.suitConfig[params["suitA"]][posItem]:
-                        array["A"].append(tempItem)
-                    elif artifactValue["artifactName"] == self.suitConfig[params["suitB"]][posItem]:
-                        array["B"].append(tempItem)
-                    else:
-                        array['C'].append(tempItem)
+                        arrayOut['B'].append(tempItem)
+                elif combinationKeyOut == "4":
+                    if artifactValue["artifactName"] == self.suitConfig["外圈"][params["suitA"]][posItem]:
+                        arrayOut["A"].append(tempItem)
+                elif combinationKeyOut == "2+2":
+                    if artifactValue["artifactName"] == self.suitConfig["外圈"][params["suitA"]][posItem]:
+                        arrayOut["A"].append(tempItem)
+                    elif artifactValue["artifactName"] == self.suitConfig["外圈"][params["suitB"]][posItem]:
+                        arrayOut["B"].append(tempItem)
 
             # 取出当前位置最大值
-            for suitKey in suit.keys():
-                suit[suitKey][posItem] = 0
-                if len(array[suitKey]) > 0:
-                    array[suitKey].sort(key=lambda x: x["score"], reverse=True)
-                    suit[suitKey][posItem] = array[suitKey][0]
+            for suitKey in suitOut.keys():
+                suitOut[suitKey][posItem] = 0
+                if len(arrayOut[suitKey]) > 0:
+                    arrayOut[suitKey].sort(key=lambda x: x["score"], reverse=True)
+                    suitOut[suitKey][posItem] = arrayOut[suitKey][0]
+
+        # 计算内圈
+        suitIn = {
+            "A": {},
+            "B": {}
+        }
+        for posItem in posNameIn:
+            arrayIn = {
+                "A": [],
+                "B": []
+            }
+            for artifactKey, artifactValue in self.artifactList[posItem].items():
+
+                # 限制一 是否已装备
+                if params["selectType"] == 1:
+                    ownerCharacter = self.getOwnerCharacterByArtifactId(posItem, artifactKey)
+                    if ownerCharacter and ownerCharacter != params["character"]:
+                        # print("该装备已装备")
+                        continue
+
+                # 限制二 对比主词条
+                if params["needMainTag"][posItem] != "主属性选择":
+                    if artifactValue["mainTag"] != params["needMainTag"][posItem]:
+                        # print("主词条不符合")
+                        continue
+
+                # 开始筛选
+                tempItem = {}
+                tempItem["artifactID"] = artifactKey
+                tempItem["artifactName"] = artifactValue["artifactName"]
+                tempItem["score"] = score.cal_score(artifactValue["normalTags"], params["heroConfig"])[1]
+
+                if combinationKeyIn == "1+1":
+                    arrayIn['B'].append(tempItem)
+                elif combinationKeyIn == "2":
+                    if artifactValue["artifactName"] == self.suitConfig["内圈"][params["suitC"]][posItem]:
+                        arrayIn["A"].append(tempItem)
+
+            # 取出当前位置最大值
+            for suitKey in suitIn.keys():
+                suitIn[suitKey][posItem] = 0
+                if len(arrayIn[suitKey]) > 0:
+                    arrayIn[suitKey].sort(key=lambda x: x["score"], reverse=True)
+                    suitIn[suitKey][posItem] = arrayIn[suitKey][0]
+
+        # print(suitOut)
+        # print(suitIn)
 
         # 根据组合类型选出来总分最大组合
-        scoreArray = []
-        combination = combinationType[combinationKey]
-        for combinationItem in combination:
+
+        # 筛选外圈
+        scoreArrayOut = []
+        combinationOut = combinationTypeOut[combinationKeyOut]
+        for combinationItem in combinationOut:
             combinationName = {}
-            tempFlag = 0
+            tempFlag = False
             scoreSum = 0
-            for index in range(len(posName)):
-                posItem = posName[index]
-                combinationItemItem = combinationItem[index]
-                if suit[combinationItemItem][posItem]:
-                    scoreNum = suit[combinationItemItem][posItem]["score"]
-                    combinationName[posItem] = suit[combinationItemItem][posItem]["artifactID"]
+
+            for posItem, combinationItemItem in zip(posNameOut, combinationItem):
+                if suitOut[combinationItemItem][posItem]:
+                    scoreNum = suitOut[combinationItemItem][posItem]["score"]
+                    combinationName[posItem] = suitOut[combinationItemItem][posItem]["artifactID"]
                     scoreSum += scoreNum
                 else:
                     # print( posItem +" 圣遗物不存在 计分中止1")
-                    tempFlag = 1
+                    tempFlag = True
                     break
 
             if tempFlag:
                 # print("圣遗物不存在 计分中止2")
                 continue
-            scoreItem = {}
-            scoreItem["combinationType"] = "".join(combinationItem)
-            scoreItem["combinationName"] = combinationName
-            scoreItem["scoreSum"] = round(scoreSum, 1)
-            scoreArray.append(scoreItem)
+            scoreOutItem = {}
+            scoreOutItem["combinationType"] = "".join(combinationItem)
+            scoreOutItem["combinationName"] = combinationName
+            scoreOutItem["scoreSum"] = round(scoreSum, 1)
+            scoreArrayOut.append(scoreOutItem)
+
+        # 筛选内圈
+        scoreArrayIn = []
+        combinationIn = combinationTypeIn[combinationKeyIn]
+        for combinationItem in combinationIn:
+            combinationName = {}
+            tempFlag = False
+            scoreSum = 0
+
+            for posItem, combinationItemItem in zip(posNameIn, combinationItem):
+                if suitIn[combinationItemItem][posItem]:
+                    scoreNum = suitIn[combinationItemItem][posItem]["score"]
+                    combinationName[posItem] = suitIn[combinationItemItem][posItem]["artifactID"]
+                    scoreSum += scoreNum
+                else:
+                    # print( posItem +" 圣遗物不存在 计分中止1")
+                    tempFlag = True
+                    break
+
+            if tempFlag:
+                # print("圣遗物不存在 计分中止2")
+                continue
+            scoreInItem = {}
+            scoreInItem["combinationType"] = "".join(combinationItem)
+            scoreInItem["combinationName"] = combinationName
+            scoreInItem["scoreSum"] = round(scoreSum, 1)
+            scoreArrayIn.append(scoreInItem)
+
+        # print(scoreArrayOut)
+        # print(scoreArrayIn)
+
+        scoreArray = []
+        for outItem in scoreArrayOut:
+            for inItem in scoreArrayIn:
+                tempItem = {}
+                tempItem["combinationType"] = outItem["combinationType"] + inItem["combinationType"]
+                outItem["combinationName"].update(inItem["combinationName"])
+                tempItem["combinationName"] = outItem["combinationName"]
+                tempItem["scoreSum"] = round(outItem["scoreSum"] + inItem["scoreSum"], 1)
+                scoreArray.append(tempItem)
         scoreArray.sort(key=lambda x: x["scoreSum"], reverse=True)
-        print(scoreArray)
+
+        # print(scoreArray)
+
         if len(scoreArray) > 0:
             return scoreArray
         else:
             return 0
 
     def getIndexByCharacter(self, character):
-        result = {"suitA": 0, "suitB": 0, "时之沙": 0, "空之杯": 0, "理之冠": 0}
+        result = {"suitA": 0, "suitB": 0, "suitC": 0, "躯干": 0, "脚部": 0, "位面球": 0, "连结绳": 0}
         if character in self.artifactScheme:
             artifactSchemeItem = self.artifactScheme[character]
             for key in artifactSchemeItem:
                 index = 0
                 if key == "suitA" or key == "suitB":
-                    suitKeyArray = list(self.suitConfig.keys())
+                    suitKeyArray = list(self.suitConfig["外圈"].keys())
                     if artifactSchemeItem[key] in suitKeyArray:
                         index = suitKeyArray.index(artifactSchemeItem[key]) + 1
-                elif key in posName:
+                if key == "suitC":
+                    suitKeyArray = list(self.suitConfig["内圈"].keys())
+                    if artifactSchemeItem[key] in suitKeyArray:
+                        index = suitKeyArray.index(artifactSchemeItem[key]) + 1
+                elif key in (posNameOut + posNameIn):
                     mainTagTypeArray = mainTagType[key]
                     if artifactSchemeItem[key] in mainTagTypeArray:
                         index = mainTagTypeArray.index(artifactSchemeItem[key]) + 1
@@ -330,7 +448,7 @@ class Data:
 
     # 获取圣遗物位置名称
     def getPosName(self):
-        return posName
+        return posNameOut + posNameIn
 
     # 获取圣遗物类型配置
     def getMainTagType(self):
