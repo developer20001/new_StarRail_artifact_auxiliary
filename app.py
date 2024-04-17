@@ -444,6 +444,8 @@ class MainWindow(QMainWindow):
             self.setWindow.close()
 
         self.manager.stop()
+        self.h.stop()
+        self.l.stop()
 
     # 全局快捷键Ctrl+Shift+Z重置贴图窗口
     def hotkey(self):
@@ -463,8 +465,8 @@ class MainWindow(QMainWindow):
             for item in self.pastes:
                 item.hide()
 
-        h = keyboard.GlobalHotKeys({'<ctrl>+<shift>+z': on_activate})
-        h.start()
+        self.h = keyboard.GlobalHotKeys({'<ctrl>+<shift>+z': on_activate})
+        self.h.start()
 
     # 左Alt键插入新数据模式，之后的圣遗物后移一位
     def insert_mode(self):
@@ -480,8 +482,8 @@ class MainWindow(QMainWindow):
                 self.insert = False
                 self.upgrade.setText(myappid)
 
-        l = keyboard.Listener(on_press=on_press, on_release=on_release)
-        # l.start()
+        self.l = keyboard.Listener(on_press=on_press, on_release=on_release)
+        self.l.start()
 
     def openSetWindow(self):
         self.setWindow = SetWindow()
