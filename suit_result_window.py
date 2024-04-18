@@ -44,7 +44,7 @@ class SuitResultWindow(QWidget):
             self.posNameLabel[posItem] = QLabel(posItem)
             self.artifactNameLabel1[posItem] = QLabel("无装备")
             self.artifactScoreLabel1[posItem] = QLabel("0")
-            # self.artifactOwnerLabel1[posItem] = QLabel("无人装备")
+            self.artifactOwnerLabel1[posItem] = QLabel("0")
             self.artifactNameLabel2[posItem] = QLabel("无装备")
             self.artifactScoreLabel2[posItem] = QLabel("0")
             self.artifactOwnerLabel2[posItem] = QLabel("无人装备")
@@ -62,7 +62,7 @@ class SuitResultWindow(QWidget):
             layout.addWidget(self.posNameLabel[posItem], 1 + 3 * counter + 1, 0, 2, 1)
             layout.addWidget(QLabel("当前："), 1 + 3 * counter + 1, 1, 1, 1)
             layout.addWidget(self.artifactNameLabel1[posItem], 1 + 3 * counter + 1, 2, 1, 1)
-            # layout.addWidget(self.artifactOwnerLabel1[posItem], 1 + 3 * counter + 1, 3, 1, 1)
+            layout.addWidget(self.artifactOwnerLabel1[posItem], 1 + 3 * counter + 1, 3, 1, 1)
             layout.addWidget(self.artifactScoreLabel1[posItem], 1 + 3 * counter + 1, 4, 1, 1)
             layout.addWidget(QLabel("推荐："), 2 + 3 * counter + 1, 1, 1, 1)
             layout.addWidget(self.artifactNameLabel2[posItem], 2 + 3 * counter + 1, 2, 1, 1)
@@ -118,10 +118,17 @@ class SuitResultWindow(QWidget):
                     newOwnerStr = "无人装备"
                 self.artifactOwnerLabel2[posItem].setText(newOwnerStr)
 
+                if newOwnerStr != "无人装备" and newOwnerStr != self.character:
+                    newOwnerconfig = data.getCharactersByCharacter(newOwnerStr)
+                    newOwnerScore = score.cal_score(newArtifactItem["normalTags"], newOwnerconfig)[1]
+                    self.artifactOwnerLabel1[posItem].setText(str(newOwnerScore))
+                else:
+                    self.artifactOwnerLabel1[posItem].setText("")
+
             scoreSub = round(newScore - oldScore, 1)
-            if scoreSub>0:
+            if scoreSub > 0:
                 scoreStyle = "color:green;"
-            elif scoreSub<0:
+            elif scoreSub < 0:
                 scoreStyle = "color:red;"
             else:
                 scoreStyle = "color:black;"
