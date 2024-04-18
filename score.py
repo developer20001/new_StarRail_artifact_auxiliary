@@ -32,7 +32,7 @@ average = {
 }
 
 
-def cal_score(ocr_result_sub, config):
+def cal_score(ocr_result_sub, config, ocr_result_main=""):
     '''计算圣遗物评分、词条数、词条强化次数
     参数：
         ocr_result_sub: ocr识别结果中副词条dict
@@ -56,11 +56,9 @@ def cal_score(ocr_result_sub, config):
     entriesSum = 0
 
     # 补分逻辑
-    # print("补分逻辑")
-    # print(ocr_result_sub)
-    # print(ocr_result_main)
-    # if ocr_result_main in config and config[ocr_result_main]>0:
-    #     if ocr_result_main==
+    if ocr_result_main != "" and config[ocr_result_main] > 0:
+        baseScore = 11.65
+        sums = round(baseScore * config[ocr_result_main], 1)
 
     for key, value in ocr_result_sub.items():
         # 兼容角色配置未区分百分比的情况

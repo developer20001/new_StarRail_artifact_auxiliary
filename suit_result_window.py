@@ -127,6 +127,7 @@ class SuitResultWindow(QWidget):
 
             scoreSub = round(newScore - oldScore, 1)
             if scoreSub > 0:
+                scoreSub = "+" + str(scoreSub)
                 scoreStyle = "color:green;"
             elif scoreSub < 0:
                 scoreStyle = "color:red;"
