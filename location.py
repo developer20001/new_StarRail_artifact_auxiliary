@@ -88,9 +88,9 @@ elif ratio > 1.7 and ratio < 1.8:
 
     x_left_B, x_right_B, y_top_B, y_bottom_B = (
         39 / 1920 * w_width + w_left,
-        124 / 1920 * w_width + w_left,
+        166 / 1920 * w_width + w_left,
         (238 - 36) / 1080 * w_hight + SCALE * 24 + w_top,
-        (147 - 36) / 1080 * w_hight + SCALE * 24 + w_top)
+        (385 - 36) / 1080 * w_hight + SCALE * 24 + w_top)
 
     x_grab_B, y_grab_B, w_grab_B, h_grab_B = (
         1478 / 1920 * w_width + w_left,
@@ -141,6 +141,7 @@ xarray_A = []
 for i in range(col_A):
     position = x_left_A + i * x_offset_A, x_right_A + i * x_offset_A
     xarray_A.append(position)
+    
 yarray_A = []
 for i in range(row_A):
     position = y_top_A + i * y_offset_A, y_bottom_A + i * y_offset_A
@@ -150,7 +151,6 @@ xarray_B = []
 for i in range(col_B):
     position = x_left_B + i * x_offset_B, x_right_B + i * x_offset_B
     xarray_B.append(position)
-print(xarray_B)
 
 yarray_B = []
 for i in range(row_B):

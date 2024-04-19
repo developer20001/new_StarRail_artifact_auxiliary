@@ -343,6 +343,7 @@ class MainWindow(QMainWindow):
     # 切换为套装推荐
     def swich_suit_window(self):
         window = SuitWindow()
+        window.initUI(self.character)
         window.show()
         self.close()
 
@@ -490,7 +491,9 @@ class MainWindow(QMainWindow):
         self.setWindow.update(self.character)
         self.setWindow.show()
 
-
+    def initCombobox(self, character):
+        index = data.getCharacterIndex(character)
+        self.combobox.setCurrentIndex(index)
 def main():
     # 任务栏图标问题
     try:

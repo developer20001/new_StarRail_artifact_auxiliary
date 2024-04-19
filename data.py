@@ -412,6 +412,13 @@ class Data:
         else:
             return 0
 
+    def getCharacterIndex(self, character):
+        resultIndex = 0
+        if character in self.characters:
+            characterKeyArray = list(self.characters.keys())
+            resultIndex = characterKeyArray.index(character)
+        return resultIndex
+
     def getIndexByCharacter(self, character):
         result = {"suitA": 0, "suitB": 0, "suitC": 0, "躯干": 0, "脚部": 0, "位面球": 0, "连结绳": 0}
         if character in self.artifactScheme:

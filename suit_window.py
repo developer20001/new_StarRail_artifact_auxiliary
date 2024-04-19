@@ -99,8 +99,6 @@ class SuitWindow(QWidget):
         layout.addWidget(self.startButton, 13, 0, 1, 4)
         self.setLayout(layout)
 
-        self.updateUI()
-
         # 注册事件
         self.openFileButton.clicked.connect(self.openFile)
         self.dataUpdateButton.clicked.connect(self.updateData)
@@ -156,11 +154,9 @@ class SuitWindow(QWidget):
         elif btn.text() == '全部' and btn.isChecked() == True:
             self.selectType = 2
 
-    # 英雄名称
-    def heroNameCurrentIndexChanged(self):
-        self.character = self.heroNameCombobox.currentText()
-        if self.setWindow:
-            self.setWindow.update(self.character)
+    def initUI(self, character):
+        index = data.getCharacterIndex(character)
+        self.heroNameCombobox.setCurrentIndex(index)
         self.updateUI()
 
     def updateUI(self):
@@ -176,6 +172,13 @@ class SuitWindow(QWidget):
                 if key in self.mainTagCombobox:
                     self.mainTagCombobox[key].setCurrentIndex(indexObj[key])
 
+    # 英雄名称
+    def heroNameCurrentIndexChanged(self):
+        self.character = self.heroNameCombobox.currentText()
+        if self.setWindow:
+            self.setWindow.update(self.character)
+        self.updateUI()
+
     # 设置按钮
     def updateData(self):
         data.loadData()
@@ -188,6 +191,7 @@ class SuitWindow(QWidget):
     def swichMainWindow(self):
         from app import MainWindow
         window = MainWindow()
+        window.initCombobox(self.character)
         window.show()
         self.close()
 
