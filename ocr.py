@@ -41,7 +41,8 @@ def rapidocr(x, y, w, h):
         replace("黑塔」", '黑塔'). \
         replace("圳裂缆索", '坼裂缆索'). \
         replace("系因", '系囚'). \
-        replace('石桔', '石梏铐')
+        replace('铅石桔', '铅石梏铐').\
+        replace('铅石枱', '铅石梏铐')
     parts = txt[1].replace("躯于", '躯干')
     lvl = txt[2]
     main_name = txt[3]
