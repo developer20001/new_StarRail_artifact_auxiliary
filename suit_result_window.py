@@ -2,13 +2,11 @@
 
 import os
 from data import data
-import score
 from extention import ExtendedComboBox
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QLabel,
-    QRadioButton,
     QPushButton,
     QWidget,
     QGridLayout
@@ -100,7 +98,7 @@ class SuitResultWindow(QWidget):
                 oldArtifactItem = data.getArtifactItem(posItem, oldArtifactsData[posItem])
                 oldScore = 0
                 if "normalTags" in oldArtifactItem:
-                    oldScore = score.cal_score(oldArtifactItem["normalTags"], config)[1]
+                    oldScore = data.cal_score(oldArtifactItem["normalTags"], config)[1]
                 self.artifactScoreLabel1[posItem].setText(str(oldScore))
 
             if posItem in newArtifactsData:
@@ -108,7 +106,7 @@ class SuitResultWindow(QWidget):
                 newArtifactItem = data.getArtifactItem(posItem, newArtifactsData[posItem])
                 newScore = 0
                 if "normalTags" in newArtifactItem:
-                    newScore = score.cal_score(newArtifactItem["normalTags"], config)[1]
+                    newScore = data.cal_score(newArtifactItem["normalTags"], config)[1]
                 self.artifactScoreLabel2[posItem].setText(str(newScore))
 
                 ownerCharacter = data.getOwnerCharacterByArtifactId(posItem, newArtifactsData[posItem])
@@ -118,18 +116,18 @@ class SuitResultWindow(QWidget):
                     newOwnerStr = "无人装备"
                 self.artifactOwnerLabel2[posItem].setText(newOwnerStr)
 
-                if newOwnerStr != "无人装备" and newOwnerStr != self.character:
-                    newOwnerconfig = data.getCharactersByCharacter(newOwnerStr)
-                    newOwnerScore = score.cal_score(newArtifactItem["normalTags"], newOwnerconfig)[1]
-                    self.artifactOwnerLabel1[posItem].setText(str(newOwnerScore))
-                else:
-                    self.artifactOwnerLabel1[posItem].setText("")
+            if newOwnerStr != "无人装备" and newOwnerStr != self.character:
+                newOwnerconfig = data.getCharactersByCharacter(newOwnerStr)
+                newOwnerScore = data.cal_score(newArtifactItem["normalTags"], newOwnerconfig)[1]
+                self.artifactOwnerLabel1[posItem].setText(str(newOwnerScore))
+            else:
+                self.artifactOwnerLabel1[posItem].setText("")
 
             scoreSub = round(newScore - oldScore, 1)
-            if scoreSub > 0:
+            if scoreSub>0:
                 scoreSub = "+" + str(scoreSub)
                 scoreStyle = "color:green;"
-            elif scoreSub < 0:
+            elif scoreSub<0:
                 scoreStyle = "color:red;"
             else:
                 scoreStyle = "color:black;"

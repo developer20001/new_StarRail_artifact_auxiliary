@@ -1,7 +1,8 @@
 '''拓展组件封装：系统级鼠标事件；增强下拉选择框'''
 
+from PySide6.QtGui import Qt
 from PySide6.QtCore import QObject, Signal, Qt, QSortFilterProxyModel
-from PySide6.QtWidgets import QComboBox, QCompleter
+from PySide6.QtWidgets import QComboBox, QCompleter, QListWidget, QCheckBox, QListWidgetItem, QLineEdit
 from pynput import mouse
 
 # 外部/系统级鼠标事件处理
@@ -65,3 +66,118 @@ class ExtendedComboBox(QComboBox):
         self.completer.setCompletionColumn(column)
         self.pFilterModel.setFilterKeyColumn(column)
         super(ExtendedComboBox, self).setModelColumn(column)
+
+
+# 自定义控件-点击按钮下拉CheckBox列表
+class XCombobox(QComboBox):
+    # 有item被选择时，发出信号
+    itemChecked = Signal(list)
+    def __init__(self, allText="全选", parent=None):
+        super().__init__(parent)
+        # 全选文本
+        self.allText = allText
+        # 保存QCheckBox控件
+        self._checks = []
+
+        # 通过setView()设置下拉列表控件,将下拉列表框弹出控件设置为给定的itemView,
+        # 在本案例中，将其设置为QListWidget
+        listwgt = QListWidget(self)
+        self.setView(listwgt)
+        ## 在调用setWiew函数后，如果使用的是便捷视图，例如（QListWidget、QTableWidget、QTreeWidget）等，需要调用setModel函数
+        self.setModel(listwgt.model())
+
+        # 通过setLineEdit用QLineEdit替换原有的文本显示控件，并设置为只读模式。
+        lineEdit = QLineEdit(self)
+        lineEdit.setReadOnly(True)
+        self.setLineEdit(lineEdit)
+
+        # 添加“全选”项
+        self.add_item(allText)
+
+    def add_item(self, text: str):
+        # 定义CheckBox
+        check = QCheckBox(text, self.view())
+        # 给添加的CheckBox都绑定信号，目的是每次Check都能作出响应。
+        check.stateChanged.connect(self.on_state_changed)
+        self._checks.append(check)
+        item = QListWidgetItem(self.view())
+        self.view().addItem(item)
+        self.view().setItemWidget(item, check)
+
+        self.update_ui()
+
+    def add_items(self, texts: list):
+        # 添加多个item
+        for text in texts:
+            self.add_item(text)
+
+    def clear(self):
+        # 移除所有Item
+        self.view().clear()
+
+    def get_selected(self):
+        # 获取被选中的Item
+        sel_data = []
+        for chk in self._checks:
+            if self._checks[0] == chk:
+                continue
+            # 如果CheckBox是选中状态，则添加到列表中
+            if chk.checkState() == Qt.Checked:
+                sel_data.append(chk.text())
+        return sel_data
+    def set_selected(self,sel_data):
+        # 设置选中的Item
+        for chk in self._checks:
+            if self._checks[0] == chk:
+                continue
+            # 如果CheckBox的文本在列表中，则设置为选中状态
+            # chk.blockSignals(True)
+            if chk.text() in sel_data:
+                chk.setCheckState(Qt.Checked)
+            else:
+                chk.setCheckState(Qt.Unchecked)
+            # chk.blockSignals(False)
+
+    def set_all_state(self, state):
+        # 设置“全选”按钮状态
+        for chk in self._checks:
+            chk.blockSignals(True)
+            chk.setCheckState(Qt.CheckState(state))
+            chk.blockSignals(False)
+
+    def check_all_state(self):
+        # 检查子选项是否达成全选
+        for chk in self._checks:
+            if self._checks[0] == chk:
+                continue
+            if chk.checkState() != Qt.Checked:
+                return Qt.Unchecked
+        return Qt.Checked
+
+    def check_no_state(self):
+        # 检查子选项是否达成全选
+        for chk in self._checks:
+            if chk.checkState() == Qt.Checked:
+                return False
+        return True
+
+    def on_state_changed(self, state):
+        # 根据Check选择状态改变时，改变lineEdit的文本显示内容
+        if self.sender() == self._checks[0]:
+            self.set_all_state(state)
+        else:
+            itemState = self.check_all_state()
+            self._checks[0].blockSignals(True)
+            self._checks[0].setCheckState(Qt.CheckState(itemState))
+            self._checks[0].blockSignals(False)
+
+        self.update_ui()
+    def update_ui(self):
+        if self._checks[0].checkState() == Qt.Checked:
+            self.lineEdit().setText(self.allText)
+        elif self.check_no_state():
+            self.lineEdit().setText("未选择")
+        else:
+            sel_data = self.get_selected()
+            self.itemChecked.emit(sel_data)
+            self.lineEdit().setText(';'.join(sel_data))

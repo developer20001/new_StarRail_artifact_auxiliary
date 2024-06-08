@@ -1,34 +1,64 @@
-# import requests
-#
-# response = requests.get('https://api.github.com/repos/SkeathyTomas/genshin_artifact_auxiliary/releases/latest')
-# print(response.json()['tag_name'])
+import copy
 
-# import os
-#
-# folder = os.path.expanduser('~/Documents')
-# folder = folder + '/keqing'
-#
-# # os.chdir(folder)
-# os.startfile(folder)
-# print("弹窗")
+basePlayer = {
+    "win": 0,
+    "lose": 0,
+    "state": 0  # 0:alive, 1:win, 2:lose
+}
 
-# class Data:
-#     def __init__(self):
-#         print("Data")
-#         self.str = "Data"
-#
-#     def getStr(self):
-#         return self.str
-#
-# dataManager = Data()
+playerNum = 176
+playersPool = [[],[],[],[],[],[],[],[],[],[],[],[]]
+
+# 初始化玩家池
+for i in range(playerNum):
+    player = copy.deepcopy(basePlayer)
+    player["name"] = "player" + str(i)
+    playersPool[0].append(player)
+
+runTimes = 15
+
+for times in range(runTimes):
+    print("第{}次匹配".format(times+1))
+    lenNum = len(playersPool)-1
+    for num in range(lenNum, -1, -1):
+        # print("第{}组玩家".format(num))
+
+        playersPoolItem = playersPool[num]
+        # print(playersPoolItem)
+        tempPool1 = []
+        tempPool2 = []
 
 
-# print(dataManager.getStr())
+        for index, player in enumerate(playersPoolItem):
+            # print("第{}组玩家".format(index))
+
+            if index % 2 == 0:
+                if index+1 < len(playersPoolItem):
+                    player["lose"] += 1
+                    if player["lose"] < 3:
+                        tempPool1.append(player)
+                    else:
+                        print(player["name"] + "淘汰")
+                else:
+                    # 无对手 不操作
+                    print(player["name"] + "无对手")
+                    tempPool1.append(player)
+            else:
+                player["win"] += 1
+                if player["win"] < 12:
+                    tempPool2.append(player)
+                else:
+                    # print()
+                    print(player["name"] + "获胜")
+                    # raise 111
 
 
-# dict1 = {'a': 1, 'b': 2}
-# dict2 = {'c': 3, 'd': 4}
-# a = dict1.update(dict2)
-# print(a)
+        # 整理数据
+        playersPool[num] = tempPool1
+        if num+1 < len(playersPool):
+            playersPool[num+1] += tempPool2
 
-print("系囚的合啮拘笼"=="系囚的合啮拘笼")
+
+    print("第" + str(times+1) + "轮结束")
+    print(playersPool)
+

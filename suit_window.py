@@ -1,8 +1,8 @@
 '''圣遗物推荐参数选择弹窗'''
 
-import os
+import os, copy
 from data import data
-from extention import ExtendedComboBox
+from extention import ExtendedComboBox, XCombobox
 
 from suit_result_window import SuitResultWindow
 from set_window import SetWindow
@@ -60,10 +60,8 @@ class SuitWindow(QWidget):
         self.mainTagCombobox = {}
         MainTagType = data.getMainTagType()
         for key in MainTagType:
-            mainTagCombobox = ExtendedComboBox()
-            mainTagCombobox.addItem("主属性选择")
-            for tagItem in MainTagType[key]:
-                mainTagCombobox.addItem(tagItem)
+            mainTagCombobox = XCombobox("任意属性")
+            mainTagCombobox.add_items(MainTagType[key])
             self.mainTagCombobox[key] = mainTagCombobox
         self.radiobtn1 = QRadioButton('仅未装备')
         self.radiobtn1.setChecked(True)
@@ -99,6 +97,8 @@ class SuitWindow(QWidget):
         layout.addWidget(self.startButton, 13, 0, 1, 4)
         self.setLayout(layout)
 
+        self.updateUI()
+
         # 注册事件
         self.openFileButton.clicked.connect(self.openFile)
         self.dataUpdateButton.clicked.connect(self.updateData)
@@ -123,14 +123,14 @@ class SuitWindow(QWidget):
         params["suitA"] = self.suitComboboxA.currentText()
         params["suitB"] = self.suitComboboxB.currentText()
         params["suitC"] = self.suitComboboxC.currentText()
-        needMainTag = {"头部": "生命值", "手部": "攻击力"}
+        needMainTag = {}
         for key in self.mainTagCombobox:
-            mainTag = self.mainTagCombobox[key].currentText()
+            mainTag = self.mainTagCombobox[key].get_selected()
             needMainTag[key] = mainTag
             params[key] = mainTag
 
         # 保存方案
-        saveParams = params
+        saveParams = copy.deepcopy(params)
         data.setArtifactScheme(self.character, saveParams)
 
         params["needMainTag"] = needMainTag
@@ -161,6 +161,7 @@ class SuitWindow(QWidget):
 
     def updateUI(self):
         indexObj = data.getIndexByCharacter(self.character)
+        print(indexObj)
         for key in indexObj:
             if key == "suitA":
                 self.suitComboboxA.setCurrentIndex(indexObj[key])
@@ -170,7 +171,7 @@ class SuitWindow(QWidget):
                 self.suitComboboxC.setCurrentIndex(indexObj[key])
             else:
                 if key in self.mainTagCombobox:
-                    self.mainTagCombobox[key].setCurrentIndex(indexObj[key])
+                    self.mainTagCombobox[key].set_selected(indexObj[key])
 
     # 英雄名称
     def heroNameCurrentIndexChanged(self):
@@ -178,6 +179,8 @@ class SuitWindow(QWidget):
         if self.setWindow:
             self.setWindow.update(self.character)
         self.updateUI()
+
+    
 
     # 设置按钮
     def updateData(self):

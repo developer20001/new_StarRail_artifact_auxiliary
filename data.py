@@ -1,7 +1,6 @@
 '''个人数据数据处理'''
 
 import json, os, shutil
-import score
 
 # 配置文件
 suitConfig_path = "src/suitConfig.json"
@@ -43,7 +42,6 @@ combinationTypeOut = {
         ["A", "A", "A", "A"]
     ]
 }
-
 combinationTypeIn = {
     "1+1": [
         ["B", "B"]
@@ -51,6 +49,34 @@ combinationTypeIn = {
     "2": [
         ["A", "A"]
     ]
+}
+coefficient = {
+    "速度": 2.492308,
+    '暴击率': 2,
+    '暴击伤害': 1,
+    '攻击力百分比': 1.5,
+    '攻击力': 0.076535,
+    '生命值百分比': 1.5,
+    '生命值': 0.153071,
+    '防御力百分比': 1.2,
+    '防御力': 0.153071,
+    '击破特攻': 1,
+    '效果命中': 1.5,
+    '效果抵抗': 1.5
+}
+average = {
+    "速度": 2.3,
+    '暴击率': 2.915,
+    '暴击伤害': 5.83,
+    '攻击力百分比': 3.89,
+    '生命值百分比': 3.89,
+    '防御力百分比': 4.86,
+    '攻击力': 18.966667,
+    '生命值': 37.933333,
+    '防御力': 18.966667,
+    '击破特攻': 5.83,
+    '效果命中': 3.89,
+    '效果抵抗': 3.89
 }
 
 
@@ -210,6 +236,92 @@ class Data:
             json.dump(self.artifactList, fp, ensure_ascii=False)
             print("保存成功")
 
+    def getCharacterIndex(self, character):
+        resultIndex = 0
+        if character in self.characters:
+            characterKeyArray = list(self.characters.keys())
+            resultIndex = characterKeyArray.index(character)
+        return resultIndex
+
+    def getIndexByCharacter(self, character):
+        result = {"suitA": 0, "suitB": 0, "suitC": 0, "躯干": [], "脚部": [], "位面球": [], "连结绳": []}
+        if character in self.artifactScheme:
+            artifactSchemeItem = self.artifactScheme[character]
+            for key in artifactSchemeItem:
+                index = 0
+                if key == "suitA" or key == "suitB":
+                    suitKeyArray = list(self.suitConfig["外圈"].keys())
+                    if artifactSchemeItem[key] in suitKeyArray:
+                        result[key] = suitKeyArray.index(artifactSchemeItem[key]) + 1
+                if key == "suitC":
+                    suitKeyArray = list(self.suitConfig["内圈"].keys())
+                    if artifactSchemeItem[key] in suitKeyArray:
+                        result[key] = suitKeyArray.index(artifactSchemeItem[key]) + 1
+                elif key in (posNameOut + posNameIn):
+                    result[key] = artifactSchemeItem[key]
+        return result
+
+    def setArtifactScheme(self, character, params):
+        self.artifactScheme[character] = params
+        with open(artifactScheme_path, 'w', encoding='utf-8') as fp:
+            json.dump(self.artifactScheme, fp, ensure_ascii=False)
+
+    # 常量获取
+    # 获取属性词条枚举
+    def getEntryArray(self):
+        return entryArray
+
+    def getMainTagType(self):
+        return mainTagType
+
+    # 获取圣遗物位置名称
+    def getPosName(self):
+        return posNameOut + posNameIn
+
+    # 获取圣遗物类型配置
+    def getMainTagType(self):
+        return mainTagType
+
+    # 获取配置文件夹路径
+    def getUserDataPath(self):
+        return folder
+
+    def getCoefficient(self):
+        return coefficient
+
+    def cal_score(self, ocr_result_sub, config):
+        scores = []
+        powerupArray = []
+        sums = 0
+        entriesSum = 0
+
+        for key, value in ocr_result_sub.items():
+            # 兼容角色配置未区分百分比的情况
+            if key == '生命值百分比' or key == '攻击力百分比' or key == '防御力百分比':
+                key_s = key[:3]
+            else:
+                key_s = key
+
+            score = round(value * config[key_s] * coefficient[key], 1)
+            scores.append(score)
+            sums += score
+
+            # 计算强化次数
+            try:
+                powerup = round(value / average[key]) - 1
+            except:
+                powerup = 0
+            powerupArray.append(powerup)
+
+            # 计算有效词条数量
+            if key_s in config and config[key_s] > 0:
+                entries = value / average[key]
+                # print(key, entries)
+                entriesSum += entries
+
+        # print(scores, round(sums, 1), powerupArray, round(entriesSum, 1))
+        return scores, round(sums, 1), powerupArray, round(entriesSum, 1)
+
     # 推荐圣遗物
     def recommend(self, params):
         # 获取组合类型
@@ -263,7 +375,7 @@ class Data:
                 tempItem = {}
                 tempItem["artifactID"] = artifactKey
                 tempItem["artifactName"] = artifactValue["artifactName"]
-                tempItem["score"] = score.cal_score(artifactValue["normalTags"], params["heroConfig"])[1]
+                tempItem["score"] = self.cal_score(artifactValue["normalTags"], params["heroConfig"])[1]
 
                 if combinationKeyOut == "1+1+1+1":
                     arrayOut['B'].append(tempItem)
@@ -317,7 +429,7 @@ class Data:
                 tempItem = {}
                 tempItem["artifactID"] = artifactKey
                 tempItem["artifactName"] = artifactValue["artifactName"]
-                tempItem["score"] = score.cal_score(artifactValue["normalTags"], params["heroConfig"])[1]
+                tempItem["score"] = self.cal_score(artifactValue["normalTags"], params["heroConfig"])[1]
 
                 if combinationKeyIn == "1+1":
                     arrayIn['B'].append(tempItem)
@@ -411,59 +523,5 @@ class Data:
             return scoreArray
         else:
             return 0
-
-    def getCharacterIndex(self, character):
-        resultIndex = 0
-        if character in self.characters:
-            characterKeyArray = list(self.characters.keys())
-            resultIndex = characterKeyArray.index(character)
-        return resultIndex
-
-    def getIndexByCharacter(self, character):
-        result = {"suitA": 0, "suitB": 0, "suitC": 0, "躯干": 0, "脚部": 0, "位面球": 0, "连结绳": 0}
-        if character in self.artifactScheme:
-            artifactSchemeItem = self.artifactScheme[character]
-            for key in artifactSchemeItem:
-                index = 0
-                if key == "suitA" or key == "suitB":
-                    suitKeyArray = list(self.suitConfig["外圈"].keys())
-                    if artifactSchemeItem[key] in suitKeyArray:
-                        index = suitKeyArray.index(artifactSchemeItem[key]) + 1
-                if key == "suitC":
-                    suitKeyArray = list(self.suitConfig["内圈"].keys())
-                    if artifactSchemeItem[key] in suitKeyArray:
-                        index = suitKeyArray.index(artifactSchemeItem[key]) + 1
-                elif key in (posNameOut + posNameIn):
-                    mainTagTypeArray = mainTagType[key]
-                    if artifactSchemeItem[key] in mainTagTypeArray:
-                        index = mainTagTypeArray.index(artifactSchemeItem[key]) + 1
-                result[key] = index
-        return result
-
-    def setArtifactScheme(self, character, params):
-        self.artifactScheme[character] = params
-        with open(artifactScheme_path, 'w', encoding='utf-8') as fp:
-            json.dump(self.artifactScheme, fp, ensure_ascii=False)
-
-    # 常量获取
-    # 获取属性词条枚举
-    def getEntryArray(self):
-        return entryArray
-
-    def getMainTagType(self):
-        return mainTagType
-
-    # 获取圣遗物位置名称
-    def getPosName(self):
-        return posNameOut + posNameIn
-
-    # 获取圣遗物类型配置
-    def getMainTagType(self):
-        return mainTagType
-
-    # 获取配置文件夹路径
-    def getUserDataPath(self):
-        return folder
-
 
 data = Data()

@@ -110,7 +110,7 @@ def orcImage(x, y, w, h):
         img = ImageGrab.grab(bbox=(x, y, x + w, y + h))
         img.save('src/grab.png')
         result, elapse = ocr('src/grab.png', use_det=True, use_cls=False, use_rec=True, text_score=0.35)
-        # print(result)
+        print(result)
         result = [item[1] for item in result]
         checkResult = check_data_compliance(result)
         if not checkResult:
@@ -119,6 +119,7 @@ def orcImage(x, y, w, h):
             flag = False
     return result
 def check_data_compliance(data):
+    # print(data)
     if len(data) != 13:
         print("数据长度不符合要求")
         return False
