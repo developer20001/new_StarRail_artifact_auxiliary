@@ -331,7 +331,7 @@ class MainWindow(QMainWindow):
     def hotkey(self):
         def on_activate():
             print('reset!')
-            self.reset() # 为啥这里调用就闪退
+            # self.reset() # 为啥这里调用就闪退
             self.id = -1
             self.artifact = {}
             self.title.setText('请选择圣遗物，然后点击右键')

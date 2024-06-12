@@ -211,6 +211,12 @@ class Data:
             print("未强化满级")
             return 0
 
+        # 得分校验
+        score = self.cal_score(data[1], self.getCharactersByCharacter("全属性"))[1]
+        if score > 100:
+            print("得分异常", score)
+            return 0
+
         # 获取圣遗物ID
         nameArray = []
         nameArray.append(data[0][0])
@@ -366,8 +372,9 @@ class Data:
                         continue
 
                 # 限制二 对比主词条
-                if params["needMainTag"][posItem] != "主属性选择":
-                    if artifactValue["mainTag"] != params["needMainTag"][posItem]:
+                if posItem in mainTagType:
+                    # print(params["needMainTag"][posItem])
+                    if artifactValue["mainTag"] not in params["needMainTag"][posItem]:
                         # print("主词条不符合")
                         continue
 
@@ -420,8 +427,9 @@ class Data:
                         continue
 
                 # 限制二 对比主词条
-                if params["needMainTag"][posItem] != "主属性选择":
-                    if artifactValue["mainTag"] != params["needMainTag"][posItem]:
+                if posItem in mainTagType:
+                    # print(params["needMainTag"][posItem])
+                    if artifactValue["mainTag"] not in params["needMainTag"][posItem]:
                         # print("主词条不符合")
                         continue
 
@@ -463,12 +471,12 @@ class Data:
                     combinationName[posItem] = suitOut[combinationItemItem][posItem]["artifactID"]
                     scoreSum += scoreNum
                 else:
-                    # print( posItem +" 圣遗物不存在 计分中止1")
+                    print( posItem +" 不存在 计分中止1")
                     tempFlag = True
                     break
 
             if tempFlag:
-                # print("圣遗物不存在 计分中止2")
+                # print("不存在 计分中止2")
                 continue
             scoreOutItem = {}
             scoreOutItem["combinationType"] = "".join(combinationItem)
@@ -490,12 +498,12 @@ class Data:
                     combinationName[posItem] = suitIn[combinationItemItem][posItem]["artifactID"]
                     scoreSum += scoreNum
                 else:
-                    # print( posItem +" 圣遗物不存在 计分中止1")
+                    print( posItem +" 不存在 计分中止21")
                     tempFlag = True
                     break
 
             if tempFlag:
-                # print("圣遗物不存在 计分中止2")
+                # print("不存在 计分中止22")
                 continue
             scoreInItem = {}
             scoreInItem["combinationType"] = "".join(combinationItem)
@@ -522,6 +530,6 @@ class Data:
         if len(scoreArray) > 0:
             return scoreArray
         else:
-            return 0
+            return False
 
 data = Data()
